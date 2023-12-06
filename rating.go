@@ -1,12 +1,48 @@
 package main
 
+import "fmt"
+
 type RoleAttributes struct {
+	duty                                   string
 	primaryAttributes, secondaryAttributes []func(*Player) int
 }
 
-var DefensiveMid = RoleAttributes{
-	primaryAttributes:   []func(*Player) int{tackling, anticipation, concentration, positioning, teamwork},
-	secondaryAttributes: []func(*Player) int{firstTouch, marking, passing, aggression, composure, decisions, workRate, stamina, strength},
+type Position = map[string]RoleAttributes
+
+var Positions = map[string]Position{
+	"DM": {
+		"DM": RoleAttributes{
+			duty:                "S",
+			primaryAttributes:   []func(*Player) int{tackling, anticipation, concentration, positioning, teamwork},
+			secondaryAttributes: []func(*Player) int{firstTouch, marking, passing, aggression, composure, decisions, workRate, stamina, strength},
+		},
+		"DLP": {
+			duty:                "S",
+			primaryAttributes:   []func(*Player) int{firstTouch, passing, technique, composure, decisions, teamwork, vision},
+			secondaryAttributes: []func(*Player) int{anticipation, offTheBall, positioning},
+		},
+	},
+}
+
+type RatedPlayer struct {
+	player        *Player
+	averageRating float64
+	ratings       map[string]float64
+}
+
+func RatePosition(p *Player, position Position) *RatedPlayer {
+	ratings := make(map[string]float64)
+	total := 0.0
+	for roleName, role := range position {
+		rating := Rate(p, &role)
+		ratings[fmt.Sprintf("%s-%s", roleName, role.duty)] = rating
+		total += rating
+	}
+	return &RatedPlayer{
+		player:        p,
+		averageRating: total / float64(len(position)),
+		ratings:       ratings,
+	}
 }
 
 const maxAttributeValue = 20.0
@@ -44,3 +80,6 @@ func decisions(p *Player) int     { return p.decisions }
 func workRate(p *Player) int      { return p.workRate }
 func stamina(p *Player) int       { return p.stamina }
 func strength(p *Player) int      { return p.strength }
+func technique(p *Player) int     { return p.technique }
+func vision(p *Player) int        { return p.vision }
+func offTheBall(p *Player) int    { return p.offTheBall }

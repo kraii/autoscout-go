@@ -9,7 +9,9 @@ import (
 )
 
 type Player struct {
-	name string
+	name     string
+	age      int
+	position string
 
 	// technical
 	corners        int
@@ -92,7 +94,9 @@ func Parse(filename string) ([]*Player, error) {
 		columns := findElements(row, "td")
 
 		p := Player{
-			name: getAttr("Name", headerIndexes, columns),
+			name:     getAttr("Name", headerIndexes, columns),
+			age:      getAttrI("Age", headerIndexes, columns),
+			position: getAttr("Position", headerIndexes, columns),
 
 			corners:        getAttrI("Cor", headerIndexes, columns),
 			crossing:       getAttrI("Cro", headerIndexes, columns),
