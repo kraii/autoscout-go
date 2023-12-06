@@ -2,21 +2,28 @@ package main
 
 import "fmt"
 
-type RoleAttributes struct {
+type Role struct {
+	name                                   string
 	duty                                   string
 	primaryAttributes, secondaryAttributes []func(*Player) int
 }
 
-type Position = map[string]RoleAttributes
+func (r *Role) Format() string {
+	return fmt.Sprintf("%s-%s", r.name, r.duty)
+}
+
+type Position = []Role
 
 var Positions = map[string]Position{
 	"DM": {
-		"DM": RoleAttributes{
+		Role{
+			name:                "DM",
 			duty:                "S",
 			primaryAttributes:   []func(*Player) int{tackling, anticipation, concentration, positioning, teamwork},
 			secondaryAttributes: []func(*Player) int{firstTouch, marking, passing, aggression, composure, decisions, workRate, stamina, strength},
 		},
-		"DLP": {
+		Role{
+			name:                "DLP",
 			duty:                "S",
 			primaryAttributes:   []func(*Player) int{firstTouch, passing, technique, composure, decisions, teamwork, vision},
 			secondaryAttributes: []func(*Player) int{anticipation, offTheBall, positioning},
@@ -33,9 +40,9 @@ type RatedPlayer struct {
 func RatePosition(p *Player, position Position) *RatedPlayer {
 	ratings := make(map[string]float64)
 	total := 0.0
-	for roleName, role := range position {
+	for _, role := range position {
 		rating := Rate(p, &role)
-		ratings[fmt.Sprintf("%s-%s", roleName, role.duty)] = rating
+		ratings[fmt.Sprintf("%s-%s", role.name, role.duty)] = rating
 		total += rating
 	}
 	return &RatedPlayer{
@@ -47,7 +54,7 @@ func RatePosition(p *Player, position Position) *RatedPlayer {
 
 const maxAttributeValue = 20.0
 
-func Rate(p *Player, r *RoleAttributes) float64 {
+func Rate(p *Player, r *Role) float64 {
 	const primaryFactor = 1.5
 	const secondaryFactor = 1.0
 
