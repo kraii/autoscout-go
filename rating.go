@@ -35,6 +35,26 @@ var Positions = map[string]Position{
 			secondaryAttributes: []func(*Player) int{marking, passing, bravery, agility, pace, strength},
 		},
 	},
+	"CM": {
+		Role{
+			name:                "MEZ",
+			duty:                "S",
+			primaryAttributes:   []func(*Player) int{passing, technique, decisions, offTheBall, workRate, acceleration},
+			secondaryAttributes: []func(*Player) int{dribbling, firstTouch, longShots, tackling, anticipation, composure, vision, balance, stamina},
+		},
+		Role{
+			name:                "DLP",
+			duty:                "S",
+			primaryAttributes:   []func(*Player) int{firstTouch, passing, technique, communication, decisions, teamwork, vision},
+			secondaryAttributes: []func(*Player) int{anticipation, offTheBall, positioning, balance},
+		},
+		Role{
+			name:                "CM",
+			duty:                "S",
+			primaryAttributes:   []func(*Player) int{firstTouch, passing, tackling, decisions, teamwork},
+			secondaryAttributes: []func(*Player) int{technique, anticipation, composure, concentration, offTheBall, vision, workRate, stamina},
+		},
+	},
 }
 
 type RatedPlayer struct {
@@ -99,3 +119,8 @@ func offTheBall(p *Player) int    { return p.offTheBall }
 func bravery(p *Player) int       { return p.bravery }
 func agility(p *Player) int       { return p.agility }
 func pace(p *Player) int          { return p.pace }
+func acceleration(p *Player) int  { return p.acceleration }
+func dribbling(p *Player) int     { return p.dribbling }
+func longShots(p *Player) int     { return p.longShots }
+func communication(p *Player) int { return p.communication }
+func balance(p *Player) int       { return p.balance }
