@@ -28,6 +28,12 @@ var Positions = map[string]Position{
 			primaryAttributes:   []func(*Player) int{firstTouch, passing, technique, composure, decisions, teamwork, vision},
 			secondaryAttributes: []func(*Player) int{anticipation, offTheBall, positioning},
 		},
+		Role{
+			name:                "BWM",
+			duty:                "S",
+			primaryAttributes:   []func(*Player) int{tackling, aggression, anticipation, teamwork, workRate, stamina},
+			secondaryAttributes: []func(*Player) int{marking, passing, bravery, agility, pace, strength},
+		},
 	},
 }
 
@@ -42,7 +48,7 @@ func RatePosition(p *Player, position Position) *RatedPlayer {
 	total := 0.0
 	for _, role := range position {
 		rating := Rate(p, &role)
-		ratings[fmt.Sprintf("%s-%s", role.name, role.duty)] = rating
+		ratings[role.Format()] = rating
 		total += rating
 	}
 	return &RatedPlayer{
@@ -90,3 +96,6 @@ func strength(p *Player) int      { return p.strength }
 func technique(p *Player) int     { return p.technique }
 func vision(p *Player) int        { return p.vision }
 func offTheBall(p *Player) int    { return p.offTheBall }
+func bravery(p *Player) int       { return p.bravery }
+func agility(p *Player) int       { return p.agility }
+func pace(p *Player) int          { return p.pace }

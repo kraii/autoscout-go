@@ -1,25 +1,12 @@
 package main
 
 import (
-	"sort"
+	"cmp"
+	"log"
+	"slices"
 )
 
 const Average = "average"
-
-type ByRating struct {
-	pos string
-	rp  []*RatedPlayer
-}
-
-func (a ByRating) Len() int           { return len(a.rp) }
-func (a ByRating) Less(i, j int) bool { return a.rp[i].ratings[a.pos] < a.rp[j].ratings[a.pos] }
-func (a ByRating) Swap(i, j int)      { a.rp[i], a.rp[j] = a.rp[j], a.rp[i] }
-
-type ByAverage []*RatedPlayer
-
-func (a ByAverage) Len() int           { return len(a) }
-func (a ByAverage) Less(i, j int) bool { return a[i].averageRating < a[j].averageRating }
-func (a ByAverage) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 func CheckSortArg(sortArg string, position Position) bool {
 	if sortArg == Average {
@@ -34,12 +21,18 @@ func CheckSortArg(sortArg string, position Position) bool {
 }
 
 func Sort(sortArg string, players []*RatedPlayer) {
-	var sorter sort.Interface
+	var sortValue func(p *RatedPlayer) float64
 	if sortArg == Average {
-		sorter = ByAverage(players)
+		sortValue = func(p *RatedPlayer) float64 { return p.averageRating }
 	} else {
-		sorter = ByRating{sortArg, players}
+		sortValue = func(p *RatedPlayer) float64 {
+			f := p.ratings[sortArg]
+			log.Printf("%s - %.3f", p.player.name, f)
+			return f
+		}
 	}
 
-	sort.Sort(sorter)
+	slices.SortFunc(players, func(a, b *RatedPlayer) int {
+		return cmp.Compare(sortValue(a), sortValue(b))
+	})
 }
