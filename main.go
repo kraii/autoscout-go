@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"os"
@@ -17,14 +18,25 @@ func (a ByRating) Less(i, j int) bool { return a.rp[i].ratings[a.pos] < a.rp[j].
 func (a ByRating) Swap(i, j int)      { a.rp[i], a.rp[j] = a.rp[j], a.rp[i] }
 
 func main() {
-	players, err := Parse("/media/kraii/Windows/Users/matth/Documents/scout/dm.html")
+	var fileFlag = flag.String("f", "-1", "the file html file to read from, exported from FM")
+	var positionFlag = flag.String("p", "-1", "the position to rate for, e.g. DM, WB, CB, W, ST")
+	flag.Parse()
+	checkFlags(fileFlag, positionFlag)
+
+	position, posExisted := Positions[*positionFlag]
+	if !posExisted {
+		println("Unknown position", *positionFlag)
+		os.Exit(2)
+	}
+
+	players, err := Parse(*fileFlag)
+
 	if err != nil {
-		panic(err)
+		println(err.Error())
+		os.Exit(3)
 	}
 
 	ratedPlayers := make([]*RatedPlayer, len(players))
-	position := Positions["DM"]
-
 	for i, p := range players {
 		ratedPlayers[i] = RatePosition(p, position)
 	}
@@ -40,6 +52,15 @@ func main() {
 		t.AppendRow(makeRow(rp))
 	}
 	t.Render()
+}
+
+func checkFlags(flags ...*string) {
+	for _, f := range flags {
+		if *f == "-1" {
+			flag.Usage()
+			os.Exit(1)
+		}
+	}
 }
 
 func makeHeader(position Position) []interface{} {
