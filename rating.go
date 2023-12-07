@@ -15,6 +15,14 @@ func (r *Role) Format() string {
 type Position = []Role
 
 var Positions = map[string]Position{
+	"GK": {
+		Role{
+			name:                "GK",
+			duty:                "D",
+			primaryAttributes:   []func(*Player) int{aerialReach, commandOfArea, communication, handling, kicking, reflexes, concentration, positioning, agility},
+			secondaryAttributes: []func(*Player) int{oneOnOnes, throwing, anticipation, decisions},
+		},
+	},
 	"DM": {
 		Role{
 			name:                "DM",
@@ -53,6 +61,22 @@ var Positions = map[string]Position{
 			duty:                "S",
 			primaryAttributes:   []func(*Player) int{firstTouch, passing, tackling, decisions, teamwork},
 			secondaryAttributes: []func(*Player) int{technique, anticipation, composure, concentration, offTheBall, vision, workRate, stamina},
+		},
+	},
+	"W": {
+		Role{
+			name:                "IW",
+			duty:                "S",
+			primaryAttributes:   []func(*Player) int{crossing, dribbling, passing, technique, acceleration, agility},
+			secondaryAttributes: []func(*Player) int{firstTouch, longShots, composure, decisions, offTheBall, vision, workRate, balance, passing, stamina},
+		},
+	},
+	"ST": {
+		Role{
+			name:                "AF",
+			duty:                "A",
+			primaryAttributes:   []func(*Player) int{finishing, dribbling, firstTouch, technique, composure, offTheBall, acceleration},
+			secondaryAttributes: []func(*Player) int{passing, decisions, anticipation, workRate, agility, balance, pace, stamina},
 		},
 	},
 }
@@ -99,28 +123,37 @@ func Rate(p *Player, r *Role) float64 {
 	return (total / maximum) * 20
 }
 
-func tackling(p *Player) int      { return p.tackling }
-func anticipation(p *Player) int  { return p.anticipation }
-func concentration(p *Player) int { return p.concentration }
-func positioning(p *Player) int   { return p.positioning }
-func teamwork(p *Player) int      { return p.teamwork }
-func firstTouch(p *Player) int    { return p.firstTouch }
-func marking(p *Player) int       { return p.marking }
-func passing(p *Player) int       { return p.passing }
+func acceleration(p *Player) int  { return p.acceleration }
+func aerialReach(p *Player) int   { return p.aerialReach }
 func aggression(p *Player) int    { return p.aggression }
+func agility(p *Player) int       { return p.agility }
+func anticipation(p *Player) int  { return p.anticipation }
+func balance(p *Player) int       { return p.balance }
+func bravery(p *Player) int       { return p.bravery }
+func commandOfArea(p *Player) int { return p.commandOfArea }
+func communication(p *Player) int { return p.communication }
 func composure(p *Player) int     { return p.composure }
+func concentration(p *Player) int { return p.concentration }
+func crossing(p *Player) int      { return p.crossing }
 func decisions(p *Player) int     { return p.decisions }
-func workRate(p *Player) int      { return p.workRate }
+func dribbling(p *Player) int     { return p.dribbling }
+func finishing(p *Player) int     { return p.finishing }
+func firstTouch(p *Player) int    { return p.firstTouch }
+func handling(p *Player) int      { return p.handling }
+func kicking(p *Player) int       { return p.kicking }
+func longShots(p *Player) int     { return p.longShots }
+func marking(p *Player) int       { return p.marking }
+func offTheBall(p *Player) int    { return p.offTheBall }
+func oneOnOnes(p *Player) int     { return p.oneOnOnes }
+func pace(p *Player) int          { return p.pace }
+func passing(p *Player) int       { return p.passing }
+func positioning(p *Player) int   { return p.positioning }
+func reflexes(p *Player) int      { return p.reflexes }
 func stamina(p *Player) int       { return p.stamina }
 func strength(p *Player) int      { return p.strength }
+func tackling(p *Player) int      { return p.tackling }
+func teamwork(p *Player) int      { return p.teamwork }
 func technique(p *Player) int     { return p.technique }
+func throwing(p *Player) int      { return p.throwing }
 func vision(p *Player) int        { return p.vision }
-func offTheBall(p *Player) int    { return p.offTheBall }
-func bravery(p *Player) int       { return p.bravery }
-func agility(p *Player) int       { return p.agility }
-func pace(p *Player) int          { return p.pace }
-func acceleration(p *Player) int  { return p.acceleration }
-func dribbling(p *Player) int     { return p.dribbling }
-func longShots(p *Player) int     { return p.longShots }
-func communication(p *Player) int { return p.communication }
-func balance(p *Player) int       { return p.balance }
+func workRate(p *Player) int      { return p.workRate }
