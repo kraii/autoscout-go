@@ -11,6 +11,7 @@ func main() {
 	var fileFlag = flag.String("f", "-1", "the file html file to read from, exported from FM")
 	var positionFlag = flag.String("p", "-1", "the position to rate for, e.g. DM, WB, CB, W, ST")
 	var sortFlag = flag.String("s", Average, "Which role to sort by, e.g. DLP-S, AF-A")
+	var maxAgeFlag = flag.Int("a", 99, "Max age of player")
 	flag.Parse()
 	checkFlags(fileFlag, positionFlag)
 
@@ -32,11 +33,21 @@ func main() {
 	}
 
 	ratedPlayers := make([]*RatedPlayer, len(players))
-	for i, p := range players {
-		ratedPlayers[i] = RatePosition(p, position)
+	i := 0
+	for _, p := range players {
+		if p.age <= *maxAgeFlag {
+			ratedPlayers[i] = RatePosition(p, position)
+			i++
+		}
 	}
+	ratedPlayers = ratedPlayers[:i]
+
 	Sort(*sortFlag, ratedPlayers)
 
+	renderTable(position, ratedPlayers)
+}
+
+func renderTable(position Position, ratedPlayers []*RatedPlayer) {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.SetStyle(table.StyleColoredDark)
