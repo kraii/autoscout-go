@@ -1,8 +1,9 @@
 package main
 
 import (
-	"autoscout-go/stack"
+	"autoscout-go/queue"
 	"bufio"
+	"github.com/davecgh/go-spew/spew"
 	"golang.org/x/net/html"
 	"os"
 	"strconv"
@@ -85,14 +86,19 @@ func Parse(filename string) ([]*Player, error) {
 
 	headerIndexes := make(map[string]int)
 	for i, header := range findElements(doc, "th") {
-		headerIndexes[getText(header)] = i
+		cellText := getText(header)
+		_, existing := headerIndexes[cellText]
+		if existing {
+			// Attributes have duplicate heading names in the html table
+			headerIndexes[spew.Sprintf("%s2", cellText)] = i
+		} else {
+			headerIndexes[cellText] = i
+		}
 	}
 
-	numPlayers := len(rows) - 1
-	result := make([]*Player, numPlayers)
-	for i, row := range rows[0:numPlayers] {
+	result := make([]*Player, len(rows)-1)
+	for i, row := range rows[1:] {
 		columns := findElements(row, "td")
-
 		p := Player{
 			name:     getAttr("Name", headerIndexes, columns),
 			age:      getAttrI("Age", headerIndexes, columns),
@@ -115,7 +121,7 @@ func Parse(filename string) ([]*Player, error) {
 			aggression:     getAttrI("Agg", headerIndexes, columns),
 			anticipation:   getAttrI("Ant", headerIndexes, columns),
 			bravery:        getAttrI("Bra", headerIndexes, columns),
-			composure:      getAttrI("Com", headerIndexes, columns),
+			composure:      getAttrI("Cmp", headerIndexes, columns),
 			concentration:  getAttrI("Cnt", headerIndexes, columns),
 			decisions:      getAttrI("Dec", headerIndexes, columns),
 			flair:          getAttrI("Fla", headerIndexes, columns),
@@ -130,7 +136,7 @@ func Parse(filename string) ([]*Player, error) {
 			agility:        getAttrI("Agi", headerIndexes, columns),
 			balance:        getAttrI("Bal", headerIndexes, columns),
 			jumping:        getAttrI("Jum", headerIndexes, columns),
-			natFit:         getAttrI("Nat", headerIndexes, columns),
+			natFit:         getNatFit(headerIndexes, columns),
 			pace:           getAttrI("Pac", headerIndexes, columns),
 			stamina:        getAttrI("Sta", headerIndexes, columns),
 			strength:       getAttrI("Str", headerIndexes, columns),
@@ -151,8 +157,17 @@ func Parse(filename string) ([]*Player, error) {
 	return result, nil
 }
 
+func getNatFit(headerIndexes map[string]int, columns []*html.Node) int {
+	result := getAttrI("Nat", headerIndexes, columns)
+	// Workaround for nationality also being called Nat
+	if result == -1 {
+		return getAttrI("Nat1", headerIndexes, columns)
+	}
+	return result
+}
+
 func findElements(node *html.Node, tag string) []*html.Node {
-	visitStack := stack.EmptyStack[*html.Node]()
+	visitStack := queue.EmptyQueue[*html.Node]()
 	visitStack.Push(node)
 	found := make([]*html.Node, 0, 10)
 
